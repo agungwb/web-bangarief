@@ -4,40 +4,59 @@
       <div v-if="story.form.flag" id="myModal" class="modal">
         <!-- Modal content -->
         <div class="modal-content">
-        <button class="close-btn" @click="hideFormModal">
-          <img class="arrow-prev" v-bind:src="require('@/assets/icon/ic-gray-cross.svg')"/>
-        </button>
-        <div class="img" v-bind:style="'background-image: url('+require('@/assets/bangarief2.jpeg')+');'">
-        </div>
-        <!-- <span class="img">
-            <img v-bind:src="require('@/assets/bangarief2.jpeg')" />
-        </span> -->
-        <!-- <img class="img" v-bind:src="require('@/assets/bangarief2.jpeg')" width="400px"/> -->
-        <div class="form">
-          <div>
-            <h1>{{modal.title}}</h1>
+          <button class="close-btn" @click="hideFormModal">
+            <img class="arrow-prev" v-bind:src="require('@/assets/icon/ic-gray-cross.svg')"/>
+          </button>
+          <div class="img" v-bind:style="'background-image: url('+require('@/assets/bangarief2.jpeg')+');'">
           </div>
-          <div>
-            <div class="label">{{modal.label.author}}</div><br />
-            <input v-model="message" v-bind:placeholder="modal.form.author"> <br />
-            <div class="label">{{modal.label.title}}</div><br />
-            <input v-model="message" v-bind:placeholder="modal.form.title"> <br />
-            <div class="label">{{modal.label.story}}</div><br />
-            <textarea v-model = "textmessage" v-bind:placeholder="modal.form.story"></textarea> <br />
-            <button class="btn">{{modal.form.submit}}</button>
+          <!-- <span class="img">
+              <img v-bind:src="require('@/assets/bangarief2.jpeg')" />
+          </span> -->
+          <!-- <img class="img" v-bind:src="require('@/assets/bangarief2.jpeg')" width="400px"/> -->
+          <div v-if="story.form.review" class="review">
+            <h1>{{modal.title_review}}</h1>
+            <div class="story">
+              <h3>{{modal.form.title}}</h3>
+              <div class="author">
+                {{modal.form.author}}
+              </div>
+              <p v-html="modal.form.story">
+              </p>
+            </div>
+            <button class="btn" @click="submitStory">{{modal.form.submit}}</button>
+          </div>
+          <div v-else class="form">
+            <div>
+              <h1>{{modal.title}}</h1>
+            </div>
+            <div>
+              <div class="label">{{modal.label.author}}</div><br />
+              <input v-model="modal.form.author" v-bind:placeholder="modal.placeholder.author"> <br />
+              <div class="label">{{modal.label.title}}</div><br />
+              <input v-model="modal.form.title" v-bind:placeholder="modal.placeholder.title"> <br />
+              <div class="label">{{modal.label.story}}</div><br />
+              <textarea v-model="modal.form.story" v-bind:placeholder="modal.placeholder.story"></textarea> <br />
+              <button class="btn" @click="reviewStory">{{modal.form.submit}}</button>
+            </div>
           </div>
         </div>
-        </div>
+        <!-- <div class="modal-confirm">
+
+        </div> -->
+        <!-- <div class="modal-failed">
+          This is just test
+        </div> -->
       </div>
     </transition>
-    <h3>{{ msg1 }}</h3>
+    <h3 class="opening">{{ msg1 }}</h3>
     <h1 class="title">{{ msg2 }}</h1>
     <img v-bind:src="img1" class="main"/>
-    <div class="block">
-      <p>{{ msg3 }}</p>
+    <div class="preface">
+      <div class="innalillahi">{{ msg3 }}</div>
       <p>{{ msg4 }}</p>
       <p>{{ msg5 }}</p>
       <p>{{ msg6 }}</p>
+      <p>{{ msg7 }}</p>
     </div>
     <div class="slideshow">
       <div class="prev"
@@ -77,34 +96,19 @@
       </div>
     </div>
 
-    <!-- <div>
-      <swiper class="swiper" :options="swiperOption">
-        <swiper-slide><img v-bind:src="slideshow.img[0]" width="200px"/></swiper-slide>
-        <swiper-slide><img v-bind:src="slideshow.img[1]" width="200px"/></swiper-slide>
-        <swiper-slide><img v-bind:src="slideshow.img[2]" width="200px"/></swiper-slide>
-        <swiper-slide><img v-bind:src="slideshow.img[0]" width="200px"/></swiper-slide>
-        <swiper-slide><img v-bind:src="slideshow.img[1]" width="200px"/></swiper-slide>
-        <swiper-slide><img v-bind:src="slideshow.img[2]" width="200px"/></swiper-slide>
-        <swiper-slide>Slide 7</swiper-slide>
-        <swiper-slide>Slide 8</swiper-slide>
-        <swiper-slide>Slide 9</swiper-slide>
-        <swiper-slide>Slide 10</swiper-slide>
-        <div class="swiper-pagination" slot="pagination"></div>
-      </swiper>
-    </div> -->
-
     <div class="stories">
-      <h2>23 Stories</h2>
+      <h2>{{story.total}} Stories</h2>
       <button class="btn" @click="showFormModal">{{ btn1 }}</button>
       <div v-for="story in story.stories" :key="story.idx" class="story">
         <h3>{{story.title}}</h3>
-        <p>
-          {{story.story}}
-        </p>
+        <div class="date">{{story.created_on}}</div>
         <div class="author">
           {{story.author}}
         </div>
+        <p v-html="story.story">
+        </p>
       </div>
+      <button v-if="story.total > story.stories.length" class="btn-more" @click="getMoreStories"><img v-bind:src="require('@/assets/icon/ic-gray-plus.svg')" /></button>
       <button class="btn" @click="showFormModal">{{ btn1 }}</button>
     </div>
   </div>
@@ -115,6 +119,8 @@ import { Swiper, SwiperSlide, directive } from 'vue-awesome-swiper'
 
 // import style (<= Swiper 5.x)
 import 'swiper/css/swiper.css'
+import axios from 'axios'
+
 export default {
   name: 'HelloWorld',
   components: {
@@ -154,48 +160,41 @@ export default {
       msg1: 'In Loving Memory of',
       msg2: 'Bang Arief Munandar',
       msg3: 'إِنَّا لِلَّٰهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ',
-      msg4: 'Wafatnya Bang Arief meninggalkan duka bagi kita semua. Sosok Bang Arief sebagai suami, ayah, kakek, teman, dan guru akan kita rindukan.',
-      msg5: 'Selama hidupnya, Bang Arief (alm) pasti memberikan kesan yang mendalam ataupun pesan-pesan pelajaran kepada kita semua. Pesan kebaikan sebagai seorang suami, ayah, guru, teman, dan berbagai peran yang diemban.',
-      msg6: 'Untuk mengenang pesan kebaikan beliau, kami mengundang bapak, ibu, murid, dan siapapun yang mengenal beliau untuk berbagi testimoni, cerita, dan pesan tentang Bang Arief (Alm).',
+      msg4: 'Wafatnya Bang Arief meninggalkan duka bagi kita semua.',
+      msg5: 'Sosok Bang Arief sebagai suami, ayah, kakek, teman, dan guru akan kita rindukan.',
+      msg6: 'Selama hidupnya, Bang Arief (Alm) pasti memberikan kesan yang mendalam ataupun pesan-pesan pelajaran kepada kita semua. Pesan kebaikan sebagai seorang suami, ayah, guru, teman, dan berbagai peran yang diemban.',
+      msg7: 'Untuk mengenang pesan kebaikan beliau, kami mengundang bapak, ibu, murid, dan siapapun yang mengenal beliau untuk berbagi testimoni, cerita, dan pesan tentang Bang Arief (Alm).',
       btn1: 'Add Your Story',
       story: {
-        stories: [
-          {
-            title: 'A Man',
-            story: 'Tahun 2008, belasan tahun lalu. Tahun itu bukan tahun yang cukup menyenangkan buat saya. Hidup terasa gini-gini aja, bahkan seperti-nya saya mengalami quarter life crisis yang lebih cepat dibandingkan kawan sebaya. Hingga akhirnya, Muhammad Alkautsar memperkenalkan saya dengan sosok yang satu ini.',
-            author: 'Akew',
-            date: '01/02/03'
-          },
-          {
-            title: 'A Man',
-            story: 'Tahun 2008, belasan tahun lalu. Tahun itu bukan tahun yang cukup menyenangkan buat saya. Hidup terasa gini-gini aja, bahkan seperti-nya saya mengalami quarter life crisis yang lebih cepat dibandingkan kawan sebaya. Hingga akhirnya, Muhammad Alkautsar memperkenalkan saya dengan sosok yang satu ini.',
-            author: 'Akew',
-            date: '01/02/03'
-          },
-          {
-            title: 'A Man',
-            story: 'Tahun 2008, belasan tahun lalu. Tahun itu bukan tahun yang cukup menyenangkan buat saya. Hidup terasa gini-gini aja, bahkan seperti-nya saya mengalami quarter life crisis yang lebih cepat dibandingkan kawan sebaya. Hingga akhirnya, Muhammad Alkautsar memperkenalkan saya dengan sosok yang satu ini.',
-            author: 'Akew',
-            date: '01/02/03'
-          }
-        ],
+        stories: [],
+        stories_short: [],
+        total: 0,
         form: {
           flag: false
-        }
+        },
+        loading: false
       },
       modal: {
         title: 'Tell Your Story with Bang Arief',
+        title_review: 'Review It First',
         label: {
           author: 'Name',
           title: 'Title',
           story: 'Story'
         },
         form: {
+          author: '',
+          title: '',
+          story: '',
+          submit: 'Submit',
+          review: false
+        },
+        placeholder: {
           author: 'Put Your Name',
           title: 'Give It a Title',
-          story: 'Tell Your Story ...',
-          submit: 'Submit'
-        }
+          story: 'Tell Your Story ...'
+        },
+        loading: false
       }
     }
   },
@@ -256,6 +255,59 @@ export default {
     },
     hideFormModal () {
       this.story.form.flag = false
+      this.modal.form.author = ''
+      this.modal.form.title = ''
+      this.modal.form.story = ''
+    },
+    preprocessStory () {
+      let temp = this.modal.form.story.split('\n')
+      let processedStory = ''
+      for (let i = 0; i < temp.length; i++) {
+        if (temp[i] !== '') {
+          processedStory = processedStory + temp[i] + '<br /><br />'
+        }
+      }
+      this.modal.form.story = processedStory
+    },
+    reviewStory () {
+      this.preprocessStory()
+      this.story.form.review = true
+    },
+    submitStory () {
+      this.modal.loading = true
+      axios.post('http://localhost:8081/v1/stories', {
+        author: this.modal.form.author,
+        title: this.modal.form.title,
+        story: this.modal.form.story,
+        email: 'test@test.com'
+      })
+        .then(response => {
+          alert('berhasil')
+        }).catch(error => {
+          alert('failed')
+          console.log(error)
+        })
+        .finally(() => {
+          this.modal.loading = false
+          this.hideFormModal()
+        })
+    },
+    getMoreStories () {
+      this.story.loading = true
+      axios.get('http://localhost:8081/v1/stories', {
+        params: {
+          id: (this.story.stories[this.story.stories.length - 1].id)
+        }
+      })
+        .then(response => {
+          this.story.stories.push(...response.data.data.stories)
+          this.story.total = response.data.data.total
+        }).catch(error => {
+          console.log(error)
+        })
+        .finally(() => {
+          this.story.loading = false
+        })
     },
     setTimer () {
       this.slideshow.timer = setInterval(() => {
@@ -269,6 +321,19 @@ export default {
   },
   created () {
     this.setTimer()
+  },
+  mounted () {
+    this.story.loading = true
+    axios.get('http://localhost:8081/v1/stories')
+      .then(response => {
+        this.story.stories.push(...response.data.data.stories)
+        this.story.total = response.data.data.total
+      }).catch(error => {
+        console.log(error)
+      })
+      .finally(() => {
+        this.story.loading = false
+      })
   }
 }
 </script>
@@ -278,7 +343,7 @@ export default {
 
 * {
   background-color:rgba(255, 255, 255, 0.5);
-  font-family: "Alegreya Sans", ui-sans-serif;
+  font-family: "Lora-Regular";
   color: rgb(101, 101, 101);
 }
 
@@ -290,9 +355,22 @@ h1, h2, h3, h4, h5, h6{
   font-weight: normal;
 }
 
+h3.opening {
+  font-family: "Roboto-Light";
+  border-radius: 1rem;
+  margin:auto;
+  width: 14rem;
+  padding: 0.5rem;
+}
+
 h1.title {
-  font-size: 40px;
-  color: rgb(55, 55, 55)
+  font-family: "DancingScript-SemiBold";
+  font-size: 52px;
+  color: #d4af37;
+  background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
+                radial-gradient(ellipse farthest-corner at left top, #5d4a1f 0%, #5d4a1f 8%, #D1B464 25%, #FFFFAC 62.5%, #FFFFFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 img.main {
@@ -311,9 +389,21 @@ img.main {
   border: solid 2px rgb(232, 232, 232);
 }
 
-.block {
+.preface {
   margin-left: 25%;
   margin-right: 25%;
+}
+
+.preface .innalillahi {
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  font-family: "Lora-Regular";
+  font-size: 21pt;
+}
+
+.preface p {
+  font-family: "Lora-Regular";
+  font-size: 15pt;
 }
 
 .slideshow{
@@ -425,7 +515,7 @@ img.main {
 }
 
 .slideshow .slide-left-enter-active, .slideshow .slide-left-leave-active  {
-  transition: 2s;
+  transition: .5s;
 }
 
 .slideshow .slide-left-enter {
@@ -437,7 +527,7 @@ img.main {
 }
 
 .slideshow .slide-right-enter-active, .slideshow .slide-right-leave-active  {
-  transition: 2s;
+  transition: .5s;
 }
 
 .slideshow .slide-right-enter {
@@ -473,9 +563,33 @@ img.main {
   border: 2px solid rgb(216, 216, 216);
   font-size: 12pt;
   font-weight: normal;
+  font-family: "Roboto-Light";
 }
 
 .stories .btn:hover{
+  background-color: rgba(216, 216, 216, 0.5);
+  cursor: pointer;
+}
+
+.stories .btn-more{
+  display: block;
+  margin: auto;
+  margin-bottom: 2rem;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 2px solid rgb(216, 216, 216);
+  color: red;
+}
+
+.stories .btn-more img {
+  transform: scale(1.3);
+  margin-top: 5px;
+}
+
+.stories .btn-more:hover{
   background-color: rgba(216, 216, 216, 0.5);
   cursor: pointer;
 }
@@ -494,16 +608,26 @@ img.main {
 }
 
 .stories .story h3{
-  font-size: 18pt;
+  margin-top: .5rem;
+  font-size: 16pt;
+  font-weight: bold;
+}
+
+.stories .story .date{
+  margin-top: -1rem;
+  font-size: 10pt;
+  font-family: "Roboto-light";
+
 }
 
 .stories .story p{
-  font-size: 14pt;
+  font-size: 13pt;
 }
 
 .stories .story .author{
-  font-size: 13pt;
-  font-weight: bold;
+  margin-top: 1rem;
+  font-size: 11pt;
+  font-family: "Roboto-Bold";
 }
 
 .modal {
@@ -535,6 +659,17 @@ img.main {
   border: solid 2px rgb(232, 232, 232);
 }
 
+.modal .modal-failed {
+  z-index: 2;
+  background-color: #ffffff;
+  margin: 5% auto; /* 15% from the top and centered */
+  padding: 3rem;
+  width: 30rem; /* Could be more or less, depending on screen size */
+  height: 20rem;
+  border-radius: 1rem;
+  border: solid 2px rgb(232, 232, 232);
+}
+
 .modal .modal-content .img{
   /* display: inline-block; */
   /* flex-basis: 30%;
@@ -548,13 +683,20 @@ img.main {
 }
 
 .modal .modal-content .form{
+  width: 50%;
   text-align: left;
+}
+
+.modal .modal-content h1{
+  font-family: "Roboto-Medium";
 }
 
 .modal .modal-content .form .label{
   margin-left: 1rem;
   margin-bottom: -1rem;
   background-color: transparent;
+  font-family: "Roboto-Light";
+  font-size: 11pt;
 }
 
 .modal .modal-content .form input{
@@ -565,7 +707,6 @@ img.main {
   border-radius: 1rem;
   padding: 1rem;
   font-size: 11pt;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .modal .modal-content .form input:focus{
@@ -574,6 +715,7 @@ img.main {
 
 .modal .modal-content .form input:empty{
   color: black;
+  /* font-size: 12pt; */
 }
 
 .modal .modal-content .form textarea{
@@ -584,19 +726,18 @@ img.main {
   padding: 1rem;
   font-size: 11pt;
   margin-bottom: 1rem;
-  font-family: Arial, Helvetica, sans-serif;
 }
 
 .modal .modal-content .form textarea:focus{
   outline: none;
-  color: black;
 }
 
 .modal .modal-content .form textarea:empty{
   color: black;
+  /* font-size: 11pt; */
 }
 
-.modal .modal-content .form .btn{
+.modal .modal-content .btn{
   padding-right: 1rem;
   padding-left: 1rem;
   width: 10rem;
@@ -608,10 +749,46 @@ img.main {
   margin: 1;
   background-color: rgb(216, 216, 216);
   cursor: pointer;
+  font-family: "Roboto-Regular"
 }
 
-.modal .modal-content .form .btn:hover{
+.modal .modal-content .btn:hover{
   background-color:aquamarine;
+}
+
+.modal .modal-content .review {
+  height: 80%;
+  width: 50%;
+  text-align: left;
+}
+
+.modal .modal-content .review .story {
+  height: 80%;
+  width: 100%;
+  overflow: scroll;
+}
+
+.modal .modal-content .review .story h3{
+  margin-top: .5rem;
+  font-size: 16pt;
+  font-weight: bold;
+}
+
+.modal .modal-content .review .story .date{
+  margin-top: -1rem;
+  font-size: 10pt;
+  font-family: "Roboto-light";
+
+}
+
+.modal .modal-content .review .story p{
+  font-size: 13pt;
+}
+
+.modal .modal-content .review .story .author{
+  margin-top: 1rem;
+  font-size: 11pt;
+  font-family: "Roboto-Bold";
 }
 
 /* .modal .modal-content .img img{
@@ -639,9 +816,14 @@ img.main {
   margin-top: 4px;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active{
   transition: opacity .5s;
 }
+
+.fade-leave-active {
+  display: none;
+}
+
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }

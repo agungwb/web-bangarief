@@ -11,7 +11,10 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "axios": "^0.21.1",
+    "moment": "^2.29.1",
     "swiper": "^5.4.5",
+    "typeface-roboto": "^1.1.13",
     "vue": "^2.5.2",
     "vue-awesome-swiper": "^4.1.1",
     "vue-router": "^3.0.1"
