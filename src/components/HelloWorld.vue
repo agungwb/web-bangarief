@@ -13,7 +13,7 @@
               <img v-bind:src="require('@/assets/bangarief2.jpeg')" />
           </span> -->
           <!-- <img class="img" v-bind:src="require('@/assets/bangarief2.jpeg')" width="400px"/> -->
-          <div v-if="story.form.review" class="review">
+          <div v-if="modal.form.review" class="review">
             <h1>{{modal.title_review}}</h1>
             <div class="story">
               <h3>{{modal.form.title}}</h3>
@@ -149,10 +149,12 @@ export default {
         },
         img: [require('@/assets/slideshow/bangarief1.jpeg'),
           require('@/assets/slideshow/bangarief2.jpeg'),
-          require('@/assets/slideshow/bangarief3.jpeg')
+          require('@/assets/slideshow/bangarief3.png'),
+          require('@/assets/slideshow/bangarief4.png'),
+          require('@/assets/slideshow/bangarief5.jpeg')
         ],
         position: 0,
-        length: 3,
+        length: 5,
         direction: 'left',
         timer: '',
         timeout: ''
@@ -258,6 +260,7 @@ export default {
       this.modal.form.author = ''
       this.modal.form.title = ''
       this.modal.form.story = ''
+      this.modal.form.review = false
     },
     preprocessStory () {
       let temp = this.modal.form.story.split('\n')
@@ -271,7 +274,7 @@ export default {
     },
     reviewStory () {
       this.preprocessStory()
-      this.story.form.review = true
+      this.modal.form.review = true
     },
     submitStory () {
       this.modal.loading = true
@@ -282,14 +285,13 @@ export default {
         email: 'test@test.com'
       })
         .then(response => {
-          alert('berhasil')
-        }).catch(error => {
-          alert('failed')
-          console.log(error)
-        })
-        .finally(() => {
+          alert('Submission berhasil.\n\nStory Anda akan dimoderasi terlebih dahulu. Mohon menunggu.')
           this.modal.loading = false
           this.hideFormModal()
+        }).catch(error => {
+          alert('Submission gagal.\n\nHarap periksa kembali semua isian')
+          console.log(error)
+          this.modal.form.review = false
         })
     },
     getMoreStories () {
@@ -539,17 +541,17 @@ img.main {
 }
 
 .stories {
-  margin-top: 6rem;
+  margin-top: 3rem;
   margin-left: 20%;
   margin-right: 20%;
   border-top: 1px solid rgb(216, 216, 216);
 }
 
 .stories h2 {
-  margin-top: 5rem;
+  margin-top: 3rem;
   margin-bottom: 2rem;
   font-size: 24pt;
-  color: rgb(55, 55, 55);
+  color: rgb(97, 97, 97);
   font-weight: normal;
   font-style: italic;
 }
@@ -747,25 +749,28 @@ img.main {
   font-size: 12pt;
   font-weight: normal;
   margin: 1;
-  background-color: rgb(216, 216, 216);
   cursor: pointer;
   font-family: "Roboto-Regular"
 }
 
 .modal .modal-content .btn:hover{
-  background-color:aquamarine;
+  background-color: rgba(216, 216, 216, 0.5);
 }
 
 .modal .modal-content .review {
-  height: 80%;
+  height: 100%;
   width: 50%;
   text-align: left;
 }
 
 .modal .modal-content .review .story {
-  height: 80%;
+  height: 65%;
   width: 100%;
   overflow: scroll;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgb(216, 216, 216);
+  border-radius: 1rem;
 }
 
 .modal .modal-content .review .story h3{
@@ -816,12 +821,12 @@ img.main {
   margin-top: 4px;
 }
 
-.fade-enter-active{
+.fade-enter-active, .fade-leave-active{
   transition: opacity .5s;
 }
 
 .fade-leave-active {
-  display: none;
+  /* display: none; */
 }
 
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
