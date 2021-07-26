@@ -1,9 +1,9 @@
 <template>
-  <div class="container">
+  <div class="container" v-bind:class="{narrow:isNarrowMode}">
     <transition name="fade">
       <div v-if="story.form.flag" id="myModal" class="modal">
         <!-- Modal content -->
-        <div class="modal-content">
+        <div class="modal-content" v-bind:class="{narrow:isNarrowMode}">
           <button class="close-btn" @click="hideFormModal">
             <img class="arrow-prev" v-bind:src="require('@/assets/icon/ic-gray-cross.svg')"/>
           </button>
@@ -82,7 +82,7 @@
       <p>{{ msg6 }}</p>
       <p>{{ msg7 }}</p>
     </div>
-    <div class="slideshow">
+    <div class="slideshow" v-bind:class="{narrow:isNarrowMode}">
       <div class="prev"
         v-if="!isNarrowMode"
         v-on:mouseover="addOverlayPrevSlideShow"
@@ -229,7 +229,7 @@ export default {
           title: '',
           story: '',
           button: {
-            submit: 'Submit >>',
+            submit: 'Submit',
             back: '<< Back'
           },
           review: false
@@ -502,6 +502,16 @@ img.main {
   border: solid 2px rgb(232, 232, 232);
 }
 
+.container.narrow {
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  background-color:rgb(255, 255, 255);
+  border-radius: 3rem !important;
+  border: none !important;
+}
+
 .preface {
   width: 85%;
   max-width: 50rem;
@@ -532,8 +542,14 @@ img.main {
   margin: auto;
   margin-top: 5rem;
   padding: 1rem;
-  width: 80%;
-  max-width: 70rem;
+  width: 90%;
+  max-width: 75rem;
+}
+
+.slideshow.narrow {
+  width: 95% !important;
+  border: none !important;
+  border-radius: 0px;
 }
 
 .slideshow .current {
@@ -548,6 +564,7 @@ img.main {
 
 .slideshow .current.narrow {
   width: 100% !important;
+  height: 50vw !important;
 }
 
 .slideshow .current .img {
@@ -789,7 +806,6 @@ img.main {
   height: 100%; /* Full height */
   overflow: none; /* Enable scroll if needed */
   background-color: rgba(0,0,0,0.8); /* Black w/ opascity */
-  animation:fadein 2s;
 }
 
 /* Modal Content/Box */
@@ -800,12 +816,20 @@ img.main {
   align-items: center;
   position:relative;
   background-color: #ffffff;
-  margin: 5% auto; /* 15% from the top and centered */
-  padding: 3rem;
-  width: 80%; /* Could be more or less, depending on screen size */
+  margin: auto; /* 15% from the top and centered */
+  margin-top: 5%;
+  margin-bottom: 5%;
+  padding: 2rem;
+  width: 85%; /* Could be more or less, depending on screen size */
   height: 70%;
   border-radius: 1rem;
   border: solid 2px rgb(232, 232, 232);
+}
+
+.modal .modal-content.narrow {
+  margin-top: 10% !important;
+  /* margin-left: 1rem !important;
+  margin-right: 1rem !important; */
 }
 
 .modal .modal-content .img{
