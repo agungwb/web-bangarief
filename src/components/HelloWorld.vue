@@ -350,7 +350,7 @@ export default {
           this.modal.loading = false
           this.hideFormModal()
         }).catch(error => {
-          alert('Submission gagal.\n\nHarap periksa kembali semua isian')
+          alert('Submission gagal.\n\nHarap coba kembali beberapa saat')
           console.log(error)
           this.modal.form.review = false
         })
