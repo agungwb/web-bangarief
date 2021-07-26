@@ -7,37 +7,61 @@
           <button class="close-btn" @click="hideFormModal">
             <img class="arrow-prev" v-bind:src="require('@/assets/icon/ic-gray-cross.svg')"/>
           </button>
-          <div class="img" v-bind:style="'background-image: url('+require('@/assets/bangarief2.jpeg')+');'">
+          <div v-if="!isNarrowMode"
+            class="img"
+            v-bind:style="'background-image: url('+require('@/assets/bangarief2.jpeg')+');'">
           </div>
-          <!-- <span class="img">
-              <img v-bind:src="require('@/assets/bangarief2.jpeg')" />
-          </span> -->
-          <!-- <img class="img" v-bind:src="require('@/assets/bangarief2.jpeg')" width="400px"/> -->
-          <div v-if="modal.form.review" class="review">
-            <h1>{{modal.title_review}}</h1>
-            <div class="story">
-              <h3>{{modal.form.title}}</h3>
-              <div class="author">
-                {{modal.form.author}}
+          <div class="content" v-bind:class="{narrow:isNarrowMode}">
+            <transition name="trans">
+              <div v-if="modal.form.review" :key="modal.form.review" class="review-story">
+                <div>
+                  <h1>{{modal.title_review}}</h1>
+                </div>
+                <div class="story">
+                  <h3>{{modal.form.title}}</h3>
+                  <div class="author">
+                    {{modal.form.author}}
+                  </div>
+                  <p v-html="modal.form.story">
+                  </p>
+                </div>
+                <button class="btn" @click="editStory">{{modal.form.button.back}}</button>
+                <button class="btn active" @click="submitStory">{{modal.form.button.submit}}</button>
               </div>
-              <p v-html="modal.form.story">
-              </p>
-            </div>
-            <button class="btn" @click="submitStory">{{modal.form.submit}}</button>
-          </div>
-          <div v-else class="form">
-            <div>
-              <h1>{{modal.title}}</h1>
-            </div>
-            <div>
-              <div class="label">{{modal.label.author}}</div><br />
-              <input v-model="modal.form.author" v-bind:placeholder="modal.placeholder.author"> <br />
-              <div class="label">{{modal.label.title}}</div><br />
-              <input v-model="modal.form.title" v-bind:placeholder="modal.placeholder.title"> <br />
-              <div class="label">{{modal.label.story}}</div><br />
-              <textarea v-model="modal.form.story" v-bind:placeholder="modal.placeholder.story"></textarea> <br />
-              <button class="btn" @click="reviewStory">{{modal.form.submit}}</button>
-            </div>
+              <div v-else class="write-story">
+                <div>
+                  <h1>{{modal.title}}</h1>
+                </div>
+                <div class="form">
+                  <div>
+                    <div class="label">{{modal.label.author}}</div><br />
+                    <input v-model="modal.form.author" v-bind:placeholder="modal.placeholder.author"> <br />
+                    <div class="label">{{modal.label.title}}</div><br />
+                    <input v-model="modal.form.title" v-bind:placeholder="modal.placeholder.title"> <br />
+                    <div class="label">{{modal.label.story}}</div><br />
+                    <textarea v-model="modal.form.story"
+                      ref="textarea"
+                      v-bind:placeholder="modal.placeholder.story">
+                    </textarea>
+                    <br />
+                    <div class="favicon">
+                      <button v-on:click='insertFavicon1'>😁</button>
+                      <button v-on:click='insertFavicon2'>🤗</button>
+                      <button v-on:click='insertFavicon3'>😍</button>
+                      <button v-on:click='insertFavicon4'>😅</button>
+                      <button v-on:click='insertFavicon5'>😢</button>
+                      <button v-on:click='insertFavicon6'>😭</button>
+                      <button v-on:click='insertFavicon7'>❤️</button>
+                    </div>
+                    <button class="btn"
+                      @click="reviewStory"
+                      :disabled="!isFormFilled">
+                      {{modal.form.button.submit}}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </transition>
           </div>
         </div>
         <!-- <div class="modal-confirm">
@@ -79,16 +103,16 @@
         <transition v-bind:name="'slide-'+slideshow.direction">
           <div class="img" v-bind:key="currentSlideShowPos" v-bind:style="'background-image: url('+slideshow.img[currentSlideShowPos]+');'"></div>
         </transition>
-        <div class="arrow-container prev">
+        <div class="arrow-container prev"
+          v-if="isNarrowMode"
+          v-on:click="prevSlideShowImageHandler">
           <img class="arrow-prev"
-            v-if="isNarrowMode"
-            v-on:click="prevSlideShowImageHandler"
             v-bind:src="require('@/assets/icon/ic-black-arrow.svg')"/>
         </div>
-        <div class="arrow-container next">
+        <div class="arrow-container next"
+          v-if="isNarrowMode"
+          v-on:click="nextSlideShowImageHandler">
           <img class="arrow-next"
-            v-if="isNarrowMode"
-            v-on:click="nextSlideShowImageHandler"
             v-bind:src="require('@/assets/icon/ic-black-arrow.svg')"/>
         </div>
       </div>
@@ -123,7 +147,7 @@
         </p>
       </div>
       <button v-if="story.total > story.stories.length" class="btn-more" @click="getMoreStories"><img v-bind:src="require('@/assets/icon/ic-gray-plus.svg')" /></button>
-      <button class="btn" @click="showFormModal">{{ btn1 }}</button>
+      <button v-if="story.total > 0" class="btn" @click="showFormModal">{{ btn1 }}</button>
     </div>
   </div>
 </template>
@@ -204,7 +228,10 @@ export default {
           author: '',
           title: '',
           story: '',
-          submit: 'Submit',
+          button: {
+            submit: 'Submit >>',
+            back: '<< Back'
+          },
           review: false
         },
         placeholder: {
@@ -228,6 +255,12 @@ export default {
     },
     isNarrowMode () {
       return (this.windowWidth < this.narrowThreshold)
+    },
+    isFormFilled () {
+      return (/\S/.test(this.modal.form.author) &&
+          /\S/.test(this.modal.form.author) &&
+          /\S/.test(this.modal.form.story) &&
+          this.modal.form.story.split(' ').length > 10)
     }
   },
   methods: {
@@ -285,8 +318,12 @@ export default {
       let temp = this.modal.form.story.split('\n')
       let processedStory = ''
       for (let i = 0; i < temp.length; i++) {
-        if (temp[i] !== '') {
-          processedStory = processedStory + temp[i] + '<br /><br />'
+        if (/\S/.test(temp[i])) {
+          if (i < temp.length - 1) {
+            processedStory = processedStory + temp[i] + '<br /><br />'
+          } else {
+            processedStory = processedStory + temp[i]
+          }
         }
       }
       this.modal.form.story = processedStory
@@ -294,6 +331,11 @@ export default {
     reviewStory () {
       this.preprocessStory()
       this.modal.form.review = true
+    },
+    editStory () {
+      let temp = this.modal.form.story.replaceAll('<br />', '\n')
+      this.modal.form.story = temp
+      this.modal.form.review = false
     },
     submitStory () {
       this.modal.loading = true
@@ -340,9 +382,50 @@ export default {
       }, 5000)
     },
     resizeScreenEventHandler (e) {
-      console.log(e)
       this.windowWidth = e.currentTarget.innerWidth
-      console.log(this.windowWidth)
+    },
+    insertFavicon1 () {
+      this.inserFaviconToStoryTextArea('😁')
+    },
+    insertFavicon2 () {
+      this.inserFaviconToStoryTextArea('🤗')
+    },
+    insertFavicon3 () {
+      this.inserFaviconToStoryTextArea('😍')
+    },
+    insertFavicon4 () {
+      this.inserFaviconToStoryTextArea('😅')
+    },
+    insertFavicon5 () {
+      this.inserFaviconToStoryTextArea('😢')
+    },
+    insertFavicon6 () {
+      this.inserFaviconToStoryTextArea('😭')
+    },
+    insertFavicon7 () {
+      this.inserFaviconToStoryTextArea('❤️')
+    },
+    inserFaviconToStoryTextArea (favicon) {
+      const textarea = this.$refs.textarea
+      const sentence = textarea.value
+
+      let pos = textarea.selectionStart
+      if (pos === undefined) {
+        pos = 0
+      }
+
+      const len = sentence.length
+
+      const before = sentence.substr(0, pos)
+      const after = sentence.substr(pos, len)
+
+      this.modal.form.story = before + favicon + after
+
+      const newLen = pos + favicon.length
+
+      setTimeout(() => {
+        textarea.selectionStart = newLen
+      }, 10)
     }
   },
   created () {
@@ -704,7 +787,7 @@ img.main {
   top: 0;
   width: 100%; /* Full width */
   height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
+  overflow: none; /* Enable scroll if needed */
   background-color: rgba(0,0,0,0.8); /* Black w/ opascity */
   animation:fadein 2s;
 }
@@ -725,39 +808,50 @@ img.main {
   border: solid 2px rgb(232, 232, 232);
 }
 
-.modal .modal-failed {
-  z-index: 2;
-  background-color: #ffffff;
-  margin: 5% auto; /* 15% from the top and centered */
-  padding: 3rem;
-  width: 30rem; /* Could be more or less, depending on screen size */
-  height: 20rem;
-  border-radius: 1rem;
-  border: solid 2px rgb(232, 232, 232);
-}
-
 .modal .modal-content .img{
   /* display: inline-block; */
   /* flex-basis: 30%;
   min-width: 30%; */
-  height: 30rem;
-  width: 22rem;
-  margin-right: 5rem;
+  height: 100%;
+  width: 35%;
+  max-width: 20rem;
+  min-width: 14rem;
+  margin-right: 5%;
   background-size: cover;
-  background-position: center;
+  background-position: top;
   border-radius: 1rem;
 }
 
-.modal .modal-content .form{
-  width: 50%;
+.modal .modal-content .content {
+  width: 65%;
+  height: 100%;
+  /* overflow-y: auto;
+  overflow-x: hidden; */
+}
+
+.modal .modal-content .content.narrow {
+  width: 100%;
+}
+
+.modal .modal-content .content .write-story {
+  height: 100%;
   text-align: left;
 }
 
-.modal .modal-content h1{
-  font-family: "Roboto-Medium";
+.modal .modal-content .content h1{
+  margin-top: -2px;
+  height: 10%;
+  font-family: "Roboto-Light";
+  font-size: 22pt;
+
 }
 
-.modal .modal-content .form .label{
+.modal .modal-content .content .write-story .form{
+  height: 90%;
+  overflow-y: auto;
+}
+
+.modal .modal-content .content .write-story .form .label{
   margin-left: 1rem;
   margin-bottom: -1rem;
   background-color: transparent;
@@ -765,96 +859,123 @@ img.main {
   font-size: 11pt;
 }
 
-.modal .modal-content .form input{
-  width: 20rem;
+.modal .modal-content .content .write-story .form input{
+  width: 40%;
+  min-width: 15rem;
   height: 1rem;
   margin-bottom: 1rem;
-  border: 2px solid rgb(216, 216, 216);
+  border: 1.5px solid rgb(216, 216, 216);
   border-radius: 1rem;
   padding: 1rem;
   font-size: 11pt;
 }
 
-.modal .modal-content .form input:focus{
+.modal .modal-content .content .write-story .form input:focus{
   outline: none;
 }
 
-.modal .modal-content .form input:empty{
+.modal .modal-content .content .write-story .form input:empty{
   color: black;
   /* font-size: 12pt; */
 }
 
-.modal .modal-content .form textarea{
-  width: 33rem;
-  height: 10rem;
-  border: 2px solid rgb(216, 216, 216);
+.modal .modal-content .content .write-story .form textarea{
+  width: 90%;
+  max-width: 33rem;
+  min-width: 20rem;
+  height: 8rem;
+  border: 1px solid rgb(216, 216, 216);
   border-radius: 1rem;
   padding: 1rem;
   font-size: 11pt;
   margin-bottom: 1rem;
 }
 
-.modal .modal-content .form textarea:focus{
+.modal .modal-content .content .write-story .form textarea:focus{
   outline: none;
 }
 
-.modal .modal-content .form textarea:empty{
+.modal .modal-content .content .write-story .form textarea:empty{
   color: black;
   /* font-size: 11pt; */
 }
 
-.modal .modal-content .btn{
+.modal .modal-content .content .write-story .form .favicon{
+  margin-top: -1rem;
+  margin-bottom: 2rem;
+}
+
+.modal .modal-content .content .write-story .form .favicon button{
+  border: none;
+  cursor: pointer;
+}
+
+.modal .modal-content .content .btn{
   padding-right: 1rem;
   padding-left: 1rem;
   width: 10rem;
   height: 3rem;
-  border-radius: 1rem;
+  border-radius: 2rem;
   border: 2px solid rgb(216, 216, 216);
   font-size: 12pt;
   font-weight: normal;
   margin: 1;
   cursor: pointer;
-  font-family: "Roboto-Regular"
+  font-family: "Roboto-Regular";
 }
 
-.modal .modal-content .btn:hover{
+.modal .modal-content .content .btn:hover {
   background-color: rgba(216, 216, 216, 0.5);
 }
 
-.modal .modal-content .review {
-  height: 100%;
-  width: 50%;
-  text-align: left;
+.modal .modal-content .content .btn:disabled {
+  border: none;
+  background-color: rgba(216, 216, 216, 0.5);
+  cursor: not-allowed;
 }
 
-.modal .modal-content .review .story {
-  height: 65%;
-  width: 100%;
-  overflow: scroll;
+.modal .modal-content .content .btn.active {
+  border: 2px solid rgb(156, 194, 253);
+  background-color: rgba(156, 194, 253,0.3);
+}
+
+.modal .modal-content .content .btn.active:hover {
+  background-color: rgba(156, 194, 253, 0.8);
+}
+
+.modal .modal-content .review-story {
+  text-align: left;
+  height: 100%;
+}
+
+.modal .modal-content .content .review-story .story {
+  height: 70%;
+  width: 95%;
+  overflow: auto;
   padding: 1rem;
   margin-bottom: 1rem;
   border: 1px solid rgb(216, 216, 216);
   border-radius: 1rem;
 }
 
-.modal .modal-content .review .story h3{
+.modal .modal-content .content .review-story .story h3{
   margin-top: .5rem;
   font-size: 16pt;
   font-weight: bold;
 }
 
-.modal .modal-content .review .story .date{
+.modal .modal-content .content .review-story .story .date{
   margin-top: -1rem;
   font-size: 10pt;
   font-family: "Roboto-light";
 
 }
 
-.modal .modal-content .review .story p{
-  font-size: 13pt;
+.modal .modal-content .content .review-story .story p{
+  font-size: 12pt;
 }
 
-.modal .modal-content .review .story .author{
+.modal .modal-content .content .review-story .story .author{
   margin-top: 1rem;
   font-size: 11pt;
   font-family: "Roboto-Bold";
@@ -894,6 +1015,18 @@ img.main {
 }
 
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+.trans-enter-active, .trans-leave-active{
+  transition: opacity .75s;
+}
+
+.trans-leave-active {
+  display: none;
+}
+
+.trans-enter, .trans-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
 
