@@ -60,6 +60,7 @@
     </div>
     <div class="slideshow">
       <div class="prev"
+        v-if="!isNarrowMode"
         v-on:mouseover="addOverlayPrevSlideShow"
         v-on:mouseleave="removeOverlayPrevSlideShow"
         v-on:click="prevSlideShowImageHandler" >
@@ -74,12 +75,25 @@
           <img class="arrow-prev" v-bind:src="require('@/assets/icon/ic-black-arrow.svg')"/>
         </div>
       </div>
-      <div class="current">
+      <div class="current" v-bind:class="{narrow:isNarrowMode}">
         <transition v-bind:name="'slide-'+slideshow.direction">
           <div class="img" v-bind:key="currentSlideShowPos" v-bind:style="'background-image: url('+slideshow.img[currentSlideShowPos]+');'"></div>
         </transition>
+        <div class="arrow-container prev">
+          <img class="arrow-prev"
+            v-if="isNarrowMode"
+            v-on:click="prevSlideShowImageHandler"
+            v-bind:src="require('@/assets/icon/ic-black-arrow.svg')"/>
+        </div>
+        <div class="arrow-container next">
+          <img class="arrow-next"
+            v-if="isNarrowMode"
+            v-on:click="nextSlideShowImageHandler"
+            v-bind:src="require('@/assets/icon/ic-black-arrow.svg')"/>
+        </div>
       </div>
       <div class="next"
+        v-if="!isNarrowMode"
         v-on:mouseover="addOverlayNextSlideShow"
         v-on:mouseleave="removeOverlayNextSlideShow"
         v-on:click="nextSlideShowImageHandler" >
@@ -132,6 +146,8 @@ export default {
   },
   data () {
     return {
+      windowWidth: window.innerWidth,
+      narrowThreshold: 800,
       swiperOption: {
         slidesPerView: 'auto',
         centeredSlides: true,
@@ -209,6 +225,9 @@ export default {
     },
     nextSlideShowPos () {
       return (this.slideshow.position + 1) < this.slideshow.length ? (this.slideshow.position + 1) : 0
+    },
+    isNarrowMode () {
+      return (this.windowWidth < this.narrowThreshold)
     }
   },
   methods: {
@@ -319,10 +338,19 @@ export default {
           this.prevSlideShowImage()
         }
       }, 5000)
+    },
+    resizeScreenEventHandler (e) {
+      console.log(e)
+      this.windowWidth = e.currentTarget.innerWidth
+      console.log(this.windowWidth)
     }
   },
   created () {
     this.setTimer()
+    window.addEventListener('resize', this.resizeScreenEventHandler)
+  },
+  destroyed () {
+    window.removeEventListener('resize', this.resizeScreenEventHandler)
   },
   mounted () {
     this.story.loading = true
@@ -392,8 +420,9 @@ img.main {
 }
 
 .preface {
-  margin-left: 25%;
-  margin-right: 25%;
+  width: 85%;
+  max-width: 50rem;
+  margin: auto;
 }
 
 .preface .innalillahi {
@@ -413,62 +442,29 @@ img.main {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin-top: 5rem;
   border: solid 2px rgb(232, 232, 232);
   border-radius: 1rem;
-  margin-right: 5%;
-  margin-left: 5%;
-  min-width: 70rem;
+  /* margin-right: 5%;
+  margin-left: 5%; */
+  margin: auto;
+  margin-top: 5rem;
   padding: 1rem;
-}
-
-/* .slideshow .prev {
-  position: relative;
-  overflow: hidden;
-}
-
-.slideshow .prev .img {
-  border-radius: 3pt;
-  height: 30rem;
-  width: 12rem;
-  background-size: cover;
-  background-position: right;
-} */
-
-.slideshow .next, .slideshow .prev {
-  height: 30rem;
-  width: 12rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.slideshow .next .img, .slideshow .prev .img {
-  position: absolute;
-  border-radius: 3pt;
-  height: 30rem;
-  width: 40rem;
-  background-size: cover;
-}
-
-.slideshow .prev .img {
-  top: 0;
-  right:0;
-  background-position: center;
-}
-
-.slideshow .next .img {
-  top: 0;
-  left: 0;
-  background-position: center;
+  width: 80%;
+  max-width: 70rem;
 }
 
 .slideshow .current {
   margin-left: 1rem;
   margin-right: 1rem;
-  height: 30rem;
-  width: 40rem;
+  width: 60%;
+  height: 35vw;
+  /* height: 30rem; */
   position: relative;
   overflow: hidden;
+}
+
+.slideshow .current.narrow {
+  width: 100% !important;
 }
 
 .slideshow .current .img {
@@ -488,6 +484,33 @@ img.main {
   cursor: pointer;
 }
 
+.slideshow .next, .slideshow .prev {
+  width: 20%;
+  height: 35vw;
+  position: relative;
+  overflow: hidden;
+}
+
+.slideshow .next .img, .slideshow .prev .img {
+  position: absolute;
+  border-radius: 3pt;
+  width: 300%;
+  height: 35vw;
+  background-size: cover;
+}
+
+.slideshow .prev .img {
+  top: 0;
+  right:0;
+  background-position: center;
+}
+
+.slideshow .next .img {
+  top: 0;
+  left: 0;
+  background-position: center;
+}
+
 .slideshow .img .overlay {
   width: 100%;
   height: 100%;
@@ -495,13 +518,51 @@ img.main {
   border-radius: 3pt;
 }
 
-.slideshow .prev .arrow-container, .slideshow .next .arrow-container {
+.slideshow .current .arrow-container {
+  position: absolute;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 50%;
+}
+
+.slideshow .current .arrow-container.prev {
+  top: 45%;
+  left: 1rem;
+}
+
+.slideshow .current .arrow-container.next {
+  top: 45%;
+  right: 1rem;
+}
+
+.slideshow .prev .arrow-container{
   position: absolute;
   height: 3rem;
   width: 3rem;
-  margin-top: 13rem;
-  margin-left: 5rem;
+  top: 45%;
+  right: 40%;
   border-radius: 50%;
+}
+
+.slideshow .next .arrow-container {
+  position: absolute;
+  height: 3rem;
+  width: 3rem;
+  top: 45%;
+  left: 40%;
+  border-radius: 50%;
+}
+
+.slideshow .current .arrow-container .arrow-prev {
+  margin-top: 25%;
+  background-color: transparent;
+  transform: rotate(180deg) scale(1.2);
+}
+
+.slideshow .current .arrow-container .arrow-next {
+  margin-top: 25%;
+  background-color: transparent;
+  transform: scale(1.2)
 }
 
 .slideshow .prev .arrow-container .arrow-prev {
@@ -541,9 +602,12 @@ img.main {
 }
 
 .stories {
+  margin: auto;
   margin-top: 3rem;
-  margin-left: 20%;
-  margin-right: 20%;
+  width: 90%;
+  max-width: 50rem;
+  /* margin-left: 20%;
+  margin-right: 20%; */
   border-top: 1px solid rgb(216, 216, 216);
 }
 
