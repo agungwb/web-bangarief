@@ -483,6 +483,7 @@ h1.title {
                 radial-gradient(ellipse farthest-corner at left top, #5d4a1f 0%, #5d4a1f 8%, #D1B464 25%, #FFFFAC 62.5%, #FFFFFF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  padding: 1rem;
 }
 
 img.main {
@@ -818,18 +819,18 @@ img.main {
   position: relative;
   background-color: #ffffff;
   margin: auto; /* 15% from the top and centered */
-  margin-top: 5%;
+  margin-top: 4rem;
   padding: 2rem;
   width: 85%; /* Could be more or less, depending on screen size */
-  height: 75%;
+  height: calc(100% - 12rem);
   border-radius: 1rem;
   border: solid 2px rgb(232, 232, 232);
 }
 
 .modal .modal-content.narrow {
-  margin-top: 7% !important;
+  margin-top: 5rem !important;
   width: 70%;
-  height: 80%;
+  height: calc(100% - 12rem) !important;
 }
 
 .modal .modal-content .img{
