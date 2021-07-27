@@ -33,32 +33,30 @@
                   <h1>{{modal.title}}</h1>
                 </div>
                 <div class="form">
-                  <div>
-                    <div class="label">{{modal.label.author}}</div><br />
-                    <input v-model="modal.form.author" v-bind:placeholder="modal.placeholder.author"> <br />
-                    <div class="label">{{modal.label.title}}</div><br />
-                    <input v-model="modal.form.title" v-bind:placeholder="modal.placeholder.title"> <br />
-                    <div class="label">{{modal.label.story}}</div><br />
-                    <textarea v-model="modal.form.story"
-                      ref="textarea"
-                      v-bind:placeholder="modal.placeholder.story">
-                    </textarea>
-                    <br />
-                    <div class="favicon">
-                      <button v-on:click='insertFavicon1'>😁</button>
-                      <button v-on:click='insertFavicon2'>🤗</button>
-                      <button v-on:click='insertFavicon3'>😍</button>
-                      <button v-on:click='insertFavicon4'>😅</button>
-                      <button v-on:click='insertFavicon5'>😢</button>
-                      <button v-on:click='insertFavicon6'>😭</button>
-                      <button v-on:click='insertFavicon7'>❤️</button>
-                    </div>
-                    <button class="btn"
-                      @click="reviewStory"
-                      :disabled="!isFormFilled">
-                      {{modal.form.button.submit}}
-                    </button>
+                  <div class="label">{{modal.label.author}}</div><br />
+                  <input v-model="modal.form.author" v-bind:placeholder="modal.placeholder.author"> <br />
+                  <div class="label">{{modal.label.title}}</div><br />
+                  <input v-model="modal.form.title" v-bind:placeholder="modal.placeholder.title"> <br />
+                  <div class="label">{{modal.label.story}}</div><br />
+                  <textarea v-model="modal.form.story"
+                    ref="textarea"
+                    v-bind:placeholder="modal.placeholder.story">
+                  </textarea>
+                  <br />
+                  <div class="favicon">
+                    <button v-on:click='insertFavicon1'>😁</button>
+                    <button v-on:click='insertFavicon2'>🤗</button>
+                    <button v-on:click='insertFavicon3'>😍</button>
+                    <button v-on:click='insertFavicon4'>😅</button>
+                    <button v-on:click='insertFavicon5'>😢</button>
+                    <button v-on:click='insertFavicon6'>😭</button>
+                    <button v-on:click='insertFavicon7'>❤️</button>
                   </div>
+                  <button class="btn" v-bind:class="{active:isFormFilled}"
+                    @click="reviewStory"
+                    :disabled="!isFormFilled">
+                    {{modal.form.button.submit}}
+                  </button>
                 </div>
               </div>
             </transition>
@@ -474,6 +472,7 @@ h3.opening {
   margin:auto;
   width: 14rem;
   padding: 0.5rem;
+  background-color: transparent;
 }
 
 h1.title {
@@ -488,11 +487,12 @@ h1.title {
 
 img.main {
   border-radius: 50%;
-  height: 20rem;
+  width: 70%;
+  max-width: 20rem;
 }
 
 .container {
-  margin-top: -2rem;
+  margin-top: 2rem;
   margin-left: 5%;
   margin-right: 5%;
   padding-top: 2rem;
@@ -544,6 +544,7 @@ img.main {
   padding: 1rem;
   width: 90%;
   max-width: 75rem;
+  background-color: transparent;
 }
 
 .slideshow.narrow {
@@ -620,8 +621,8 @@ img.main {
 
 .slideshow .current .arrow-container {
   position: absolute;
-  height: 2rem;
-  width: 2rem;
+  height: 2.5rem;
+  width: 2.5rem;
   border-radius: 50%;
 }
 
@@ -654,15 +655,15 @@ img.main {
 }
 
 .slideshow .current .arrow-container .arrow-prev {
-  margin-top: 25%;
+  margin-top: 32%;
   background-color: transparent;
-  transform: rotate(180deg) scale(1.2);
+  transform: rotate(180deg) scale(1.5);
 }
 
 .slideshow .current .arrow-container .arrow-next {
-  margin-top: 25%;
+  margin-top: 32%;
   background-color: transparent;
-  transform: scale(1.2)
+  transform: scale(1.5)
 }
 
 .slideshow .prev .arrow-container .arrow-prev {
@@ -814,26 +815,24 @@ img.main {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  position:relative;
+  position: relative;
   background-color: #ffffff;
   margin: auto; /* 15% from the top and centered */
   margin-top: 5%;
-  margin-bottom: 5%;
   padding: 2rem;
   width: 85%; /* Could be more or less, depending on screen size */
-  height: 70%;
+  height: 75%;
   border-radius: 1rem;
   border: solid 2px rgb(232, 232, 232);
 }
 
 .modal .modal-content.narrow {
-  margin-top: 10% !important;
-  /* margin-left: 1rem !important;
-  margin-right: 1rem !important; */
+  margin-top: 7% !important;
+  width: 70%;
+  height: 80%;
 }
 
 .modal .modal-content .img{
-  /* display: inline-block; */
   /* flex-basis: 30%;
   min-width: 30%; */
   height: 100%;
@@ -905,9 +904,10 @@ img.main {
 
 .modal .modal-content .content .write-story .form textarea{
   width: 90%;
-  max-width: 33rem;
-  min-width: 20rem;
-  height: 8rem;
+  max-width: 40rem;
+  min-width: 18rem;
+  height: calc(100% - 23rem);
+  min-height: 10rem;
   border: 1px solid rgb(216, 216, 216);
   border-radius: 1rem;
   padding: 1rem;
@@ -1027,7 +1027,8 @@ img.main {
   background-color: rgb(216, 216, 216);
   color: black;
   transform: scale(1.4);
-  margin-top: 4px;
+  margin-top: 5px;
+  margin-left: 2px;
 }
 
 .fade-enter-active, .fade-leave-active{
