@@ -34,13 +34,18 @@
                 </div>
                 <div class="form">
                   <div class="label">{{modal.label.author}}</div><br />
-                  <input v-model="modal.form.author" v-bind:placeholder="modal.placeholder.author"> <br />
+                  <input v-model="modal.form.author"
+                    v-bind:placeholder="modal.placeholder.author"
+                    v-bind:class="{narrow:isNarrowMode}"> <br />
                   <div class="label">{{modal.label.title}}</div><br />
-                  <input v-model="modal.form.title" v-bind:placeholder="modal.placeholder.title"> <br />
+                  <input v-model="modal.form.title"
+                    v-bind:placeholder="modal.placeholder.title"
+                    v-bind:class="{narrow:isNarrowMode}"> <br />
                   <div class="label">{{modal.label.story}}</div><br />
                   <textarea v-model="modal.form.story"
                     ref="textarea"
-                    v-bind:placeholder="modal.placeholder.story">
+                    v-bind:placeholder="modal.placeholder.story"
+                    v-bind:class="{narrow:isNarrowMode}">
                   </textarea>
                   <br />
                   <div class="favicon">
@@ -819,18 +824,18 @@ img.main {
   position: relative;
   background-color: #ffffff;
   margin: auto; /* 15% from the top and centered */
-  margin-top: 4rem;
+  margin-top: 3rem;
   padding: 2rem;
   width: 85%; /* Could be more or less, depending on screen size */
-  height: calc(100% - 12rem);
+  height: calc(100% - 10rem);
   border-radius: 1rem;
   border: solid 2px rgb(232, 232, 232);
 }
 
 .modal .modal-content.narrow {
-  margin-top: 5rem !important;
+  margin-top: 2rem !important;
   width: 70%;
-  height: calc(100% - 12rem) !important;
+  height: calc(100% - 8rem) !important;
 }
 
 .modal .modal-content .img{
@@ -873,6 +878,7 @@ img.main {
 .modal .modal-content .content .write-story .form{
   height: 90%;
   overflow-y: auto;
+  background-color: transparent;
 }
 
 .modal .modal-content .content .write-story .form .label{
@@ -894,13 +900,21 @@ img.main {
   font-size: 11pt;
 }
 
+.modal .modal-content .content .write-story .form input.narrow{
+  width: 85%;
+  min-width: 4rem;
+  font-size: 10pt;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 10pt;
+}
+
 .modal .modal-content .content .write-story .form input:focus{
   outline: none;
 }
 
 .modal .modal-content .content .write-story .form input:empty{
   color: black;
-  /* font-size: 12pt; */
 }
 
 .modal .modal-content .content .write-story .form textarea{
@@ -914,6 +928,14 @@ img.main {
   padding: 1rem;
   font-size: 11pt;
   margin-bottom: 1rem;
+}
+
+.modal .modal-content .content .write-story .form textarea.narrow{
+  width: 85%;
+  min-width: 4rem;
+  font-size: 10pt;
+  height: calc(100% - 20rem);
+
 }
 
 .modal .modal-content .content .write-story .form textarea:focus{
@@ -938,7 +960,8 @@ img.main {
 .modal .modal-content .content .btn{
   padding-right: 1rem;
   padding-left: 1rem;
-  width: 10rem;
+  width: 45%;
+  max-width: 10rem;
   height: 3rem;
   border-radius: 2rem;
   border: 2px solid rgb(216, 216, 216);
