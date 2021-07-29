@@ -78,7 +78,7 @@
     <h3 class="opening">{{ msg1 }}</h3>
     <h1 class="title">{{ msg2 }}</h1>
     <img v-bind:src="img1" class="main"/>
-    <div class="preface">
+    <div class="preface" v-bind:class="{narrow:isNarrowMode}">
       <div class="innalillahi">{{ msg3 }}</div>
       <p>{{ msg4 }}</p>
       <p>{{ msg5 }}</p>
@@ -146,7 +146,7 @@
         <div class="author">
           {{story.author}}
         </div>
-        <p v-html="story.story">
+        <p v-html="story.story" v-bind:class="{narrow:isNarrowMode}">
         </p>
       </div>
       <button v-if="story.total > story.stories.length" class="btn-more" @click="getMoreStories"><img v-bind:src="require('@/assets/icon/ic-gray-plus.svg')" /></button>
@@ -342,7 +342,7 @@ export default {
     },
     submitStory () {
       this.modal.loading = true
-      axios.post('http://45.32.110.54:8081/v1/stories', {
+      axios.post('http://bangarief.com/v1/stories', {
         author: this.modal.form.author,
         title: this.modal.form.title,
         story: this.modal.form.story,
@@ -360,7 +360,7 @@ export default {
     },
     getMoreStories () {
       this.story.loading = true
-      axios.get('http://45.32.110.54:8081/v1/stories', {
+      axios.get('http://bangarief.com/v1/stories', {
         params: {
           id: (this.story.stories[this.story.stories.length - 1].id)
         }
@@ -440,7 +440,7 @@ export default {
   },
   mounted () {
     this.story.loading = true
-    axios.get('http://45.32.110.54:8081/v1/stories')
+    axios.get('http://bangarief.com/v1/stories')
       .then(response => {
         this.story.stories.push(...response.data.data.stories)
         this.story.total = response.data.data.total
@@ -534,6 +534,10 @@ img.main {
 .preface p {
   font-family: "Lora-Regular";
   font-size: 15pt;
+}
+
+.preface.narrow p {
+  font-size: 14pt !important;
 }
 
 .slideshow{
@@ -795,6 +799,10 @@ img.main {
 
 .stories .story p{
   font-size: 13pt;
+}
+
+.stories .story p{
+  font-size: 12pt;
 }
 
 .stories .story .author{
