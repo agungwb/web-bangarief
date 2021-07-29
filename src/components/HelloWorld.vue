@@ -342,7 +342,7 @@ export default {
     },
     submitStory () {
       this.modal.loading = true
-      axios.post('http://bangarief.com/v1/stories', {
+      axios.post('https://bangarief.com/v1/stories', {
         author: this.modal.form.author,
         title: this.modal.form.title,
         story: this.modal.form.story,
@@ -360,7 +360,7 @@ export default {
     },
     getMoreStories () {
       this.story.loading = true
-      axios.get('http://bangarief.com/v1/stories', {
+      axios.get('https://bangarief.com/v1/stories', {
         params: {
           id: (this.story.stories[this.story.stories.length - 1].id)
         }
@@ -440,7 +440,7 @@ export default {
   },
   mounted () {
     this.story.loading = true
-    axios.get('http://bangarief.com/v1/stories')
+    axios.get('https://bangarief.com/v1/stories')
       .then(response => {
         this.story.stories.push(...response.data.data.stories)
         this.story.total = response.data.data.total
